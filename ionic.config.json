@@ -1,0 +1,7 @@
+{
+  "name": "gasotrip",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

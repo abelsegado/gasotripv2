@@ -1,10 +1,10 @@
 name: Build iOS IPA
 
 on:
-  workflow_dispatch: # lo lanzas manualmente
+  workflow_dispatch:
   push:
     branches:
-      - master # cámbialo si usas otra rama
+      - master
 
 jobs:
   build:
@@ -17,25 +17,32 @@ jobs:
       # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.8" # cámbialo a tu versión
+          flutter-version: "3.32.8"
           channel: stable
 
-      # 3. Instalar dependencias
+      # 3. Verificar instalación de Flutter
+      - name: Verify Flutter installation
+        run: flutter doctor -v
+
+      # 4. Instalar dependencias con manejo de errores
       - name: Flutter pub get
-        run: flutter pub get
+        run: |
+          flutter clean
+          flutter pub get --verbose
+        timeout-minutes: 5
 
-      # 4. Compilar sin firmar
+      # 5. Compilar sin firmar
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --verbose
 
-      # 5. Crear archivo .ipa
+      # 6. Crear archivo .ipa
       - name: Package IPA
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r app.ipa Payload
 
-      # 6. Guardar artefacto
+      # 7. Guardar artefacto
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:

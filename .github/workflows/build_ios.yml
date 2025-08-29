@@ -1,50 +1,43 @@
 name: Build iOS IPA
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - master
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14  # Versión específica
 
     steps:
-      # 1. Descargar repo
-      - uses: actions/checkout@v3
-
-      # 2. Instalar Flutter
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.8"
-          channel: stable
-
-      # 3. Verificar instalación de Flutter
-      - name: Verify Flutter installation
-        run: flutter doctor -v
-
-      # 4. Instalar dependencias con manejo de errores
-      - name: Flutter pub get
-        run: |
-          flutter clean
-          flutter pub get --verbose
-        timeout-minutes: 5
-
-      # 5. Compilar sin firmar
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign --verbose
-
-      # 6. Crear archivo .ipa
-      - name: Package IPA
-        run: |
-          mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r app.ipa Payload
-
-      # 7. Guardar artefacto
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build
-          path: app.ipa
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.32.8"
+        
+    - name: Check environment
+      run: |
+        flutter doctor -v
+        echo "Pubspec content:"
+        cat pubspec.yaml | head -20
+        
+    - name: Install dependencies
+      run: flutter pub get --verbose
+      timeout-minutes: 10
+      
+    - name: Build iOS
+      run: flutter build ios --release --no-codesign --verbose
+      
+    - name: Package IPA
+      run: |
+        mkdir -p Payload
+        cp -r build/ios/iphoneos/Runner.app Payload/
+        zip -r app.ipa Payload
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app
+        path: app.ipa

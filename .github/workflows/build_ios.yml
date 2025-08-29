@@ -17,7 +17,7 @@ jobs:
       # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.19.0" # cámbialo a tu versión
+          flutter-version: "3.32.8" # cámbialo a tu versión
           channel: stable
 
       # 3. Instalar dependencias

@@ -146,6 +146,11 @@ export class FuelCalculationService {
     }
   }
 
+  deleteHistoryItem(timestamp: number): void {
+    this.history = this.history.filter(h => h.timestamp !== timestamp);
+    this.saveHistory();
+  }
+
   private addToHistory(calculation: FuelCalculation): void {
     this.history.unshift(calculation);
     if (this.history.length > 50) {

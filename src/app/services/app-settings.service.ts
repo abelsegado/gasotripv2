@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Language } from './i18n.service';
-import { DEFAULT_FUEL_PRICES } from '../models/fuel.models';
+import { FuelPrices, DEFAULT_FUEL_PRICES } from '../models/fuel.models';
 
 export type DistanceUnit = 'km' | 'mi';
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 export interface AppSettings {
   language: Language;
   distanceUnit: DistanceUnit;
   theme: ThemeMode;
-  fuelPrices: Record<string, number>;
+  fuelPrices: FuelPrices;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -52,7 +52,7 @@ export class AppSettingsService {
         this.settings = {
           ...this.settings,
           ...parsed,
-          fuelPrices: { ...DEFAULT_FUEL_PRICES, ...(parsed.fuelPrices ?? {}) },
+          fuelPrices: { ...DEFAULT_FUEL_PRICES, ...(parsed.fuelPrices ?? {}) } as FuelPrices,
         };
       }
     } catch {

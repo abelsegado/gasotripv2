@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { NetworkService, NetworkStatus } from './services/network.service';
 import { WelcomeService } from './services/welcome.service';
 import { ModalController } from '@ionic/angular';
@@ -16,12 +16,12 @@ export class AppComponent implements OnInit, OnDestroy {
   isOnline = true;
   private networkSub?: Subscription;
 
-  constructor(
-    private networkService: NetworkService,
-    private welcomeService: WelcomeService,
-    private modalCtrl: ModalController,
-    private i18nService: I18nService
-  ) {}
+  private networkService = inject(NetworkService);
+  private welcomeService = inject(WelcomeService);
+  private modalCtrl = inject(ModalController);
+  private i18nService = inject(I18nService);
+
+  constructor() {}
 
   t(key: string): string {
     return this.i18nService.t(key);

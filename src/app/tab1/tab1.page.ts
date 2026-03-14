@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
@@ -41,13 +41,13 @@ export class Tab1Page implements OnInit, OnDestroy {
   private inputChange$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private fuelService: FuelCalculationService,
-    private themeService: ThemeService,
-    private i18nService: I18nService,
-    private priceService: FuelPriceService,
-    private toastCtrl: ToastController
-  ) {}
+  private fuelService = inject(FuelCalculationService);
+  private themeService = inject(ThemeService);
+  private i18nService = inject(I18nService);
+  private priceService = inject(FuelPriceService);
+  private toastCtrl = inject(ToastController);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.isDarkMode = this.themeService.getCurrentTheme() === 'dark';

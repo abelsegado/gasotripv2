@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ThemeService } from '../services/theme.service';
 import { I18nService, Language } from '../services/i18n.service';
 import enTranslations from '../../assets/i18n/en.json';
@@ -18,10 +18,10 @@ export class TabsPage implements OnInit {
     es: esTranslations,
   };
 
-  constructor(
-    private themeService: ThemeService,
-    private i18nService: I18nService
-  ) {}
+  private themeService = inject(ThemeService);
+  private i18nService = inject(I18nService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.updateThemeState();

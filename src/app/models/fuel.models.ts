@@ -17,7 +17,15 @@ export const FUEL_TYPES: FuelType[] = [
   { id: 'lpg', name: 'GLP', icon: 'cloud' },
 ];
 
-export const DEFAULT_FUEL_PRICES: Record<string, number> = {
+export interface FuelPrices {
+  gasoline: number;
+  diesel: number;
+  electric: number;
+  lpg: number;
+  [key: string]: number;
+}
+
+export const DEFAULT_FUEL_PRICES: FuelPrices = {
   gasoline: 1.60,
   diesel: 1.50,
   electric: 0.25,

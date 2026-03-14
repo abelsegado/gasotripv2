@@ -1,0 +1,141 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title class="toolbar-title">
+      <ion-icon name="settings"></ion-icon>
+      {{ t('settings.title') }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="settings-content">
+  <div class="settings-container">
+    
+    <!-- Appearance Section -->
+    <ion-card class="settings-card">
+      <ion-card-header>
+        <ion-card-title class="section-title">
+          <ion-icon name="brush-outline"></ion-icon>
+          {{ t('settings.appearance') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item class="setting-item">
+            <ion-icon slot="start" [name]="settings.theme === 'dark' ? 'moon' : 'sunny'" color="primary"></ion-icon>
+            <ion-select
+              [label]="t('settings.theme')"
+              labelPlacement="fixed"
+              [(ngModel)]="settings.theme"
+              (ionChange)="onThemeChange()">
+              <ion-select-option value="light">{{ t('settings.themeLight') }}</ion-select-option>
+              <ion-select-option value="dark">{{ t('settings.themeDark') }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="setting-item">
+            <ion-icon slot="start" name="language-outline" color="secondary"></ion-icon>
+            <ion-select
+              [label]="t('settings.language')"
+              labelPlacement="fixed"
+              [(ngModel)]="settings.language"
+              (ionChange)="onLanguageChange()">
+              <ion-select-option value="es">{{ t('settings.spanish') }}</ion-select-option>
+              <ion-select-option value="en">{{ t('settings.english') }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Units Section -->
+    <ion-card class="settings-card">
+      <ion-card-header>
+        <ion-card-title class="section-title">
+          <ion-icon name="options-outline"></ion-icon>
+          {{ t('settings.units') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item class="setting-item">
+            <ion-icon slot="start" name="navigate-outline" color="tertiary"></ion-icon>
+            <ion-select
+              [label]="t('settings.distanceUnit')"
+              labelPlacement="fixed"
+              [(ngModel)]="settings.distanceUnit"
+              (ionChange)="onDistanceUnitChange()">
+              <ion-select-option value="km">{{ t('settings.km') }}</ion-select-option>
+              <ion-select-option value="mi">{{ t('settings.miles') }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Fuel Prices Section -->
+    <ion-card class="settings-card">
+      <ion-card-header>
+        <ion-card-title class="section-title">
+          <ion-icon name="cash-outline"></ion-icon>
+          {{ t('settings.fuelPrices') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none" class="prices-list">
+          @for (fuel of fuelTypes; track fuel.id) {
+            <ion-item class="setting-item price-item">
+              <ion-icon slot="start" [name]="fuel.icon" color="medium"></ion-icon>
+              <ion-input
+                [label]="t('settings.' + fuel.id)"
+                labelPlacement="fixed"
+                type="number"
+                inputmode="decimal"
+                step="0.01"
+                [ngModel]="settings.fuelPrices[fuel.id]"
+                (ngModelChange)="onFuelPriceChange(fuel.id, $event)">
+              </ion-input>
+            </ion-item>
+          }
+
+          <ion-button fill="outline" expand="block" (click)="resetFuelPrices()" class="reset-btn">
+            <ion-icon slot="start" name="refresh"></ion-icon>
+            {{ t('settings.resetPrices') }}
+          </ion-button>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tips Section (reusing some UI from original Info) -->
+    <ion-card class="settings-card tips-card">
+      <ion-card-header>
+        <ion-card-title class="section-title">
+          <ion-icon name="bulb-outline"></ion-icon>
+          {{ t('info.tipsTitle') }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="tips-mini-grid">
+          @for (tip of tips; track tip.title) {
+            <div class="tip-pill" [class]="tip.color">
+              <ion-icon [name]="tip.icon"></ion-icon>
+              <span>{{ tip.title }}</span>
+            </div>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- About Section -->
+    <div class="about-section">
+      <div class="app-logo-mini">
+        <ion-icon name="car-sport"></ion-icon>
+      </div>
+      <h3>{{ appName }}</h3>
+      <p>{{ t('settings.version') }}: {{ appVersion }}</p>
+      <p>{{ t('settings.developer') }}: {{ author }}</p>
+      <p class="disclaimer">{{ t('settings.disclaimer') }}</p>
+      <p class="copyright">© {{ currentYear }} {{ appName }}</p>
+    </div>
+
+  </div>
+</ion-content>

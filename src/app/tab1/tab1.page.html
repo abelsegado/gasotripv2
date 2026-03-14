@@ -1,44 +1,231 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Gasotrip</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title class="toolbar-title">
+      <ion-icon name="car-sport"></ion-icon>
+      {{ t('app.name') }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleTheme()" fill="clear" [title]="isDarkMode ? t('tabs.light') : t('tabs.dark')">
+        <ion-icon slot="icon-only" [name]="isDarkMode ? 'sunny' : 'moon'"></ion-icon>
+      </ion-button>
+      <ion-button (click)="clearForm()" fill="clear" [title]="t('calculator.clearForm')">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Gasotrip</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <app-explore-container name="Tab 1 page"></app-explore-container>
-  <form (ngSubmit)="calcularGasolina()" #gasForm="ngForm" style="margin: 24px;">
-    <ion-item>
-      <ion-label position="floating">Kilómetros recorridos</ion-label>
-      <ion-input type="number" required [(ngModel)]="kilometros" name="kilometros"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Consumo medio (L/100km)</ion-label>
-      <ion-input type="number" required [(ngModel)]="consumoMedio" name="consumoMedio" step="0.1"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Precio gasolina (€/L)</ion-label>
-      <ion-input type="number" required [(ngModel)]="precioGasolina" name="precioGasolina" step="0.01"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Número de integrantes</ion-label>
-      <ion-input type="number" required [(ngModel)]="integrantes" name="integrantes" min="1"></ion-input>
-    </ion-item>
-    <ion-button expand="block" type="submit" style="margin-top: 16px;">Calcular</ion-button>
-  </form>
-  <div *ngIf="resultadoMostrado" style="margin: 24px;">
-    <ion-card>
+
+<ion-content [fullscreen]="true" class="main-content">
+  <div class="form-container">
+    <ion-card class="form-card">
+      <div class="card-glow"></div>
       <ion-card-header>
-        <ion-card-title>Resultado</ion-card-title>
+        <ion-card-title class="card-title">
+          <ion-icon name="road"></ion-icon>
+          {{ t('calculator.title') }}
+        </ion-card-title>
+        <ion-card-subtitle class="card-subtitle">
+          {{ t('calculator.subtitle') }}
+        </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <p><strong>Litros consumidos:</strong> {{ litrosConsumidos | number:'1.2-2' }} L</p>
-        <p><strong>Coste total:</strong> {{ costeTotal | currency:'EUR' }}</p>
-        <p><strong>Coste por persona:</strong> {{ costePorPersona | currency:'EUR' }}</p>
+        <form (ngSubmit)="calculate()">
+          <ion-list class="form-list">
+
+            <!-- Fuel Type -->
+            <ion-item class="form-item" lines="none">
+              <ion-select
+                [label]="t('calculator.fuelType')"
+                labelPlacement="stacked"
+                [(ngModel)]="selectedFuelType"
+                name="fuelType"
+                interface="popover"
+                class="custom-select"
+                (ionChange)="onFuelTypeChange()">
+                @for (fuel of fuelTypes; track fuel.id) {
+                  <ion-select-option [value]="fuel.id">
+                    {{ fuel.name }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+
+            <!-- Trip Name (optional) -->
+            <ion-item class="form-item trip-name-item" lines="none">
+              <ion-input
+                [label]="t('calculator.tripName')"
+                labelPlacement="stacked"
+                type="text"
+                [(ngModel)]="tripName"
+                name="tripName"
+                [placeholder]="t('calculator.tripNamePlaceholder')"
+                class="custom-input">
+                <ion-icon slot="start" name="bookmark-outline" [attr.aria-label]="t('calculator.tripName')"></ion-icon>
+              </ion-input>
+            </ion-item>
+
+            <div class="input-group">
+              <!-- Kilometers -->
+              <ion-item class="form-item" [class.error]="getErrorForField('kilometers')" lines="none">
+                <ion-input
+                  [label]="t('calculator.kilometers')"
+                  labelPlacement="stacked"
+                  type="number"
+                  inputmode="decimal"
+                  [ngModel]="kilometers"
+                  (ngModelChange)="onKilometersChange($event)"
+                  name="kilometers"
+                  [placeholder]="t('calculator.kilometersPlaceholder')"
+                  class="custom-input">
+                  <ion-icon slot="start" name="navigate" [attr.aria-label]="t('calculator.kilometers')"></ion-icon>
+                </ion-input>
+              </ion-item>
+              @if (getErrorForField('kilometers')) {
+                <span class="error-message">{{ getErrorForField('kilometers') }}</span>
+              }
+
+              <!-- Consumption -->
+              <ion-item class="form-item" [class.error]="getErrorForField('consumption')" lines="none">
+                <ion-input
+                  [label]="t('calculator.consumption')"
+                  labelPlacement="stacked"
+                  type="number"
+                  inputmode="decimal"
+                  [ngModel]="averageConsumption"
+                  (ngModelChange)="onConsumptionChange($event)"
+                  name="averageConsumption"
+                  [placeholder]="t('calculator.consumptionPlaceholder')"
+                  step="0.1"
+                  class="custom-input">
+                  <ion-icon slot="start" name="speedometer" [attr.aria-label]="t('calculator.consumption')"></ion-icon>
+                </ion-input>
+              </ion-item>
+              @if (getErrorForField('consumption')) {
+                <span class="error-message">{{ getErrorForField('consumption') }}</span>
+              }
+
+              <!-- Price -->
+              <ion-item class="form-item" [class.error]="getErrorForField('price')" lines="none">
+                <ion-input
+                  [label]="t('calculator.price')"
+                  labelPlacement="stacked"
+                  type="number"
+                  inputmode="decimal"
+                  [ngModel]="fuelPrice"
+                  (ngModelChange)="onPriceChange($event)"
+                  name="fuelPrice"
+                  [placeholder]="t('calculator.pricePlaceholder')"
+                  step="0.01"
+                  class="custom-input">
+                  <ion-icon slot="start" name="cash" [attr.aria-label]="t('calculator.price')"></ion-icon>
+                </ion-input>
+              </ion-item>
+              @if (getErrorForField('price')) {
+                <span class="error-message">{{ getErrorForField('price') }}</span>
+              }
+
+              <!-- Passengers -->
+              <ion-item class="form-item passengers-item" [class.error]="getErrorForField('passengers')" lines="none">
+                <ion-input
+                  [label]="t('calculator.passengers')"
+                  labelPlacement="stacked"
+                  type="number"
+                  inputmode="numeric"
+                  [ngModel]="passengers"
+                  (ngModelChange)="onPassengersChange($event)"
+                  name="passengers"
+                  class="custom-input">
+                  <ion-icon slot="start" name="people" [attr.aria-label]="t('calculator.passengers')"></ion-icon>
+                </ion-input>
+                <div class="passenger-buttons">
+                  <ion-button fill="clear" size="small" (click)="changePassengers(-1)" [disabled]="passengers <= 1">
+                    <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" (click)="changePassengers(1)" [disabled]="passengers >= 20">
+                    <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+              @if (getErrorForField('passengers')) {
+                <span class="error-message">{{ getErrorForField('passengers') }}</span>
+              }
+            </div>
+          </ion-list>
+
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="isCalculating"
+            class="calculate-btn"
+            shape="round">
+            @if (isCalculating) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              <ion-icon slot="start" name="calculator"></ion-icon>
+              {{ t('calculator.calculate') }}
+            }
+          </ion-button>
+        </form>
       </ion-card-content>
     </ion-card>
+
+    @if (showResult && result) {
+      <ion-card class="result-card">
+        <div class="result-glow"></div>
+        <ion-card-header>
+          <ion-card-title class="result-title">
+            <ion-icon name="receipt"></ion-icon>
+            {{ t('calculator.result') }}
+            @if (tripName) {
+              <span class="trip-name-badge">{{ tripName }}</span>
+            }
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="main-result">
+            <span class="result-label">{{ t('calculator.totalCost') }}</span>
+            <span class="result-value highlight">{{ formatCurrency(result.totalCost) }}</span>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="result-label">
+                <ion-icon name="water"></ion-icon>
+                {{ t('calculator.liters') }}
+              </span>
+              <span class="result-value">{{ formatLiters(result.litersConsumed) }}</span>
+            </div>
+
+            @if (passengers > 1) {
+              <div class="result-item">
+                <span class="result-label">
+                  <ion-icon name="person"></ion-icon>
+                  {{ t('calculator.perPerson') }}
+                </span>
+                <span class="result-value">{{ formatCurrency(result.costPerPerson) }}</span>
+              </div>
+            }
+          </div>
+
+          @if (passengers > 1 && result.savingsPerPerson > 0) {
+            <div class="savings-tip">
+              <ion-icon name="wallet"></ion-icon>
+              <span>{{ t('calculator.savings', { amount: formatCurrency(result.savingsPerPerson) }) }}</span>
+            </div>
+          }
+
+          <div class="result-actions">
+            <ion-button fill="outline" (click)="shareResult()" class="share-btn">
+              <ion-icon slot="start" name="share-social"></ion-icon>
+              {{ t('calculator.share') }}
+            </ion-button>
+            <ion-button fill="outline" (click)="saveFavorite()" class="favorite-btn" [class.active]="isFavorite">
+              <ion-icon slot="start" [name]="isFavorite ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+              {{ isFavorite ? t('calculator.saved') : t('calculator.save') }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
   </div>
 </ion-content>

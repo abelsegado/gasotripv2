@@ -1,0 +1,32 @@
+<ion-content class="welcome-content">
+  <div class="slides-container">
+    @for (slide of slides; track slide.title; let i = $index) {
+      <div class="slide" [class.active]="i === currentSlide">
+        <div class="slide-icon">
+          <ion-icon [name]="slide.icon"></ion-icon>
+        </div>
+        <h2>{{ slide.title }}</h2>
+        <p>{{ slide.description }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="pagination">
+    @for (slide of slides; track slide.title; let i = $index) {
+      <span class="dot" [class.active]="i === currentSlide"></span>
+    }
+  </div>
+
+  <div class="actions">
+    <ion-button fill="outline" (click)="close()" class="skip-btn">
+      {{ t('welcome.skip') }}
+    </ion-button>
+    <ion-button (click)="next()" class="next-btn">
+      @if (currentSlide === totalSlides - 1) {
+        {{ t('welcome.start') }}
+      } @else {
+        {{ t('welcome.next') }}
+      }
+    </ion-button>
+  </div>
+</ion-content>

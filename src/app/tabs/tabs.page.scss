@@ -1,1 +1,51 @@
+:host {
+  ion-tab-button {
+    transition: all 0.3s ease;
+    transform: scale(1);
+    
+    &.active-tab {
+      transform: scale(1.1);
+      
+      ion-icon {
+        transform: scale(1.2);
+        transition: transform 0.3s ease;
+      }
+    }
+    
+    &:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+  }
+  
+  .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+    animation: slideUp 0.3s ease forwards;
+  }
+}
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

@@ -1,17 +1,83 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
+  <ion-toolbar color="tertiary">
+    <ion-title class="toolbar-title">
+      <ion-icon name="bookmark"></ion-icon>
+      {{ t('favorites.title') }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="favorites-content">
+  @if (favorites.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="bookmark-outline"></ion-icon>
+      </div>
+      <h2>{{ t('favorites.emptyTitle') }}</h2>
+      <p>{{ t('favorites.emptyMessage') }}</p>
+      <ion-button fill="solid" routerLink="/tabs/tab1" class="action-btn">
+        <ion-icon slot="start" name="calculator"></ion-icon>
+        {{ t('favorites.makeCalculation') }}
+      </ion-button>
+    </div>
+  } @else {
+    <div class="favorites-container">
+      <ion-list class="favorites-list">
+        @for (item of favorites; track item.timestamp; let i = $index) {
+          <ion-item-sliding class="favorite-item">
+            <ion-item class="item-content">
+              <div class="item-icon" [class]="item.fuelType">
+                <ion-icon [name]="getFuelIcon(item.fuelType)"></ion-icon>
+              </div>
+              <ion-label class="item-label">
+                @if (item.tripName) {
+                  <div class="item-trip-name">{{ item.tripName }}</div>
+                }
+                <div class="item-header">
+                  <span class="item-fuel">{{ getFuelName(item.fuelType) }}</span>
+                  <span class="item-date">{{ formatDate(item.timestamp!) }}</span>
+                </div>
+                <div class="item-details">
+                  <span>
+                    <ion-icon name="navigate"></ion-icon>
+                    {{ item.kilometers }} km
+                  </span>
+                  <span>
+                    <ion-icon name="speedometer"></ion-icon>
+                    {{ item.averageConsumption }} L/100
+                  </span>
+                  <span>
+                    <ion-icon name="people"></ion-icon>
+                    {{ item.passengers }}
+                  </span>
+                </div>
+              </ion-label>
+              <div class="item-cost" slot="end">
+                <span class="cost-value">{{ formatCurrency(item.result!.totalCost) }}</span>
+                @if (item.passengers > 1) {
+                  <span class="cost-per-person">{{ formatCurrency(item.result!.costPerPerson) }}/pers</span>
+                }
+              </div>
+            </ion-item>
+            <ion-item-options side="start">
+              <ion-item-option color="tertiary" (click)="loadTrip(item)">
+                <ion-icon slot="top" name="arrow-forward-circle"></ion-icon>
+                {{ t('favorites.loadTrip') }}
+              </ion-item-option>
+            </ion-item-options>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="confirmDelete(i)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+      <p class="swipe-hint">
+        <ion-icon name="swap-horizontal"></ion-icon>
+        Desliza para cargar o eliminar
+      </p>
+    </div>
+  }
 </ion-content>

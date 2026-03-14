@@ -1,0 +1,410 @@
+.history-content {
+  --background: linear-gradient(180deg, var(--ion-color-secondary-shade) 0%, var(--ion-color-light) 100%);
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  padding: 32px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.empty-icon {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--ion-color-secondary) 0%, var(--ion-color-secondary-shade) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(var(--ion-color-secondary-rgb), 0.3);
+}
+
+.empty-icon ion-icon {
+  font-size: 50px;
+  color: var(--ion-color-secondary-contrast);
+}
+
+.empty-state h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 0 0 8px;
+}
+
+.empty-state p {
+  color: var(--ion-color-medium);
+  margin: 0 0 24px;
+  font-size: 1rem;
+}
+
+.action-btn {
+  --border-radius: 16px;
+  font-weight: 600;
+  height: 50px;
+}
+
+.history-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  animation: slideDown 0.4s ease-out;
+}
+
+.stat-card {
+  background: var(--ion-card-background);
+  border-radius: 16px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:active {
+  transform: scale(0.95);
+}
+
+.stat-card ion-icon {
+  font-size: 24px;
+  color: var(--ion-color-secondary);
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-list {
+  padding: 8px 16px;
+  animation: slideUp 0.5s ease-out 0.1s both;
+}
+
+.history-item {
+  margin-bottom: 8px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.item-content {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --background: var(--ion-item-background);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.item-content:active {
+  transform: scale(0.98);
+}
+
+.item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.item-icon.gasoline {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.item-icon.diesel {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.item-icon.electric {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.item-icon.lpg {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.item-icon ion-icon {
+  font-size: 20px;
+  color: white;
+}
+
+.item-label {
+  flex: 1;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.item-date {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.item-fuel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ion-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-details {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.item-details span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.item-details ion-icon {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+}
+
+.item-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.cost-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ion-color-secondary);
+}
+
+.cost-per-person {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+}
+
+ion-item-options {
+  border-radius: 0 16px 16px 0;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 400px) {
+  .history-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .stat-card {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+
+  .stat-card ion-icon {
+    display: none;
+  }
+}
+
+.filters-container {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--ion-card-background);
+  margin: 12px 16px;
+  border-radius: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.filter-item {
+  flex: 1;
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.no-results ion-icon {
+  font-size: 48px;
+  color: var(--ion-color-medium);
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.no-results p {
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search bar */
+.search-container {
+  padding: 8px 12px 0;
+}
+
+.custom-searchbar {
+  --background: var(--ion-card-background);
+  --border-radius: 16px;
+  --box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --placeholder-color: var(--ion-color-medium);
+  padding: 0;
+}
+
+/* Trip name in list */
+.item-trip-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin-bottom: 4px;
+}
+
+/* Passenger buttons inside edit form */
+.passengers-item {
+  display: flex;
+  align-items: center;
+}
+
+.passenger-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.passenger-buttons ion-button {
+  --color: var(--ion-color-secondary);
+  margin: 0;
+}
+
+/* Edit Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.edit-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ion-background-color, #fff);
+  border-radius: 28px 28px 0 0;
+  z-index: 1001;
+  padding: 24px;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.edit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.edit-modal-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ion-color-secondary);
+  margin: 0;
+}
+
+.edit-item {
+  --background: var(--ion-color-light);
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.edit-modal-footer {
+  margin-top: 20px;
+}
+
+.save-edit-btn {
+  --background: linear-gradient(135deg, var(--ion-color-secondary) 0%, var(--ion-color-secondary-shade) 100%);
+  --border-radius: 16px;
+  height: 52px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+

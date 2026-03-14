@@ -1,17 +1,235 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
+  <ion-toolbar color="secondary">
+    <ion-title class="toolbar-title">
+      <ion-icon name="time"></ion-icon>
+      {{ t('history.title') }}
     </ion-title>
+    @if (history.length > 0) {
+      <ion-buttons slot="end">
+        <ion-button (click)="toggleFilters()" fill="clear">
+          <ion-icon slot="icon-only" name="filter"></ion-icon>
+        </ion-button>
+        <ion-button (click)="exportToCSV()" fill="clear">
+          <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+        </ion-button>
+        <ion-button (click)="confirmClearHistory()" fill="clear" color="danger">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="history-content">
+  @if (history.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <h2>{{ t('history.emptyTitle') }}</h2>
+      <p>{{ t('history.emptyMessage') }}</p>
+      <ion-button fill="solid" routerLink="/tabs/tab1" class="action-btn">
+        <ion-icon slot="start" name="calculator"></ion-icon>
+        {{ t('history.makeCalculation') }}
+      </ion-button>
+    </div>
+  } @else {
+    <!-- Search bar -->
+    <div class="search-container">
+      <ion-searchbar
+        [placeholder]="t('history.searchPlaceholder')"
+        [value]="searchQuery"
+        (ionInput)="onSearchChange($any($event.target).value)"
+        animated
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+    @if (showFilters) {
+      <div class="filters-container">
+        <ion-item lines="none" class="filter-item">
+          <ion-select
+            [label]="t('history.sort')"
+            labelPlacement="stacked"
+            [(ngModel)]="sortBy"
+            (ionChange)="onSortChange()"
+            interface="popover">
+            <ion-select-option value="newest">{{ t('history.sortNewest') }}</ion-select-option>
+            <ion-select-option value="oldest">{{ t('history.sortOldest') }}</ion-select-option>
+            <ion-select-option value="expensive">{{ t('history.sortExpensive') }}</ion-select-option>
+            <ion-select-option value="cheapest">{{ t('history.sortCheapest') }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none" class="filter-item">
+          <ion-select
+            [label]="t('history.fuel')"
+            labelPlacement="stacked"
+            [(ngModel)]="filterFuelType"
+            (ionChange)="onFilterChange()"
+            interface="popover">
+            <ion-select-option value="all">{{ t('history.all') }}</ion-select-option>
+            @for (fuel of fuelTypes; track fuel.id) {
+              <ion-select-option [value]="fuel.id">{{ fuel.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </div>
+    }
+
+    <div class="history-stats">
+      <div class="stat-card">
+        <ion-icon name="car-sport"></ion-icon>
+        <span class="stat-value">{{ getTotalKm() }}</span>
+        <span class="stat-label">{{ t('history.totalKm') }}</span>
+      </div>
+      <div class="stat-card">
+        <ion-icon name="cash"></ion-icon>
+        <span class="stat-value">{{ getTotalCost() }}</span>
+        <span class="stat-label">{{ t('history.spent') }}</span>
+      </div>
+      <div class="stat-card">
+        <ion-icon name="water"></ion-icon>
+        <span class="stat-value">{{ getTotalLiters() }}</span>
+        <span class="stat-label">{{ t('history.liters') }}</span>
+      </div>
+    </div>
+
+    @if (filteredHistory.length === 0) {
+      <div class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>{{ t('history.noResults') }}</p>
+      </div>
+    } @else {
+      <ion-list class="history-list">
+        @for (item of filteredHistory; track item.timestamp; let i = $index) {
+          <ion-item-sliding class="history-item">
+            <ion-item class="item-content">
+              <div class="item-icon" [class]="item.fuelType">
+                <ion-icon [name]="getFuelIcon(item.fuelType)"></ion-icon>
+              </div>
+              <ion-label class="item-label">
+                <div class="item-header">
+                  <span class="item-date">{{ formatDate(item.timestamp!) }}</span>
+                  <span class="item-fuel">{{ getFuelName(item.fuelType) }}</span>
+                </div>
+                @if (item.tripName) {
+                  <div class="item-trip-name">{{ item.tripName }}</div>
+                }
+                <div class="item-details">
+                  <span>
+                    <ion-icon name="navigate"></ion-icon>
+                    {{ item.kilometers }} km
+                  </span>
+                  <span>
+                    <ion-icon name="speedometer"></ion-icon>
+                    {{ item.averageConsumption }} L/100
+                  </span>
+                </div>
+              </ion-label>
+              <div class="item-cost" slot="end">
+                <span class="cost-value">{{ formatCurrency(item.result!.totalCost) }}</span>
+                @if (item.passengers > 1) {
+                  <span class="cost-per-person">{{ formatCurrency(item.result!.costPerPerson) }}{{ t('history.perPerson') }}</span>
+                }
+              </div>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="primary" (click)="openEditModal(i)">
+                <ion-icon slot="icon-only" name="create"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="danger" (click)="confirmDeleteItem(i)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
+    }
+  }
 </ion-content>
+
+<!-- Edit Modal -->
+@if (showEditModal && editItem) {
+  <div class="modal-backdrop" (click)="closeEditModal()"></div>
+  <div class="edit-modal">
+    <div class="edit-modal-header">
+      <h2>{{ t('history.editTitle') }}</h2>
+      <ion-button fill="clear" (click)="closeEditModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="edit-modal-body">
+      <ion-item class="edit-item" lines="none">
+        <ion-input
+          [label]="t('calculator.tripName')"
+          labelPlacement="stacked"
+          type="text"
+          [(ngModel)]="editTripName"
+          [placeholder]="t('calculator.tripNamePlaceholder')">
+          <ion-icon slot="start" name="bookmark-outline"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <ion-item class="edit-item" lines="none">
+        <ion-input
+          [label]="t('calculator.kilometers')"
+          labelPlacement="stacked"
+          type="number"
+          inputmode="decimal"
+          [ngModel]="editKilometers"
+          (ngModelChange)="onEditKmChange($event)">
+          <ion-icon slot="start" name="navigate"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <ion-item class="edit-item" lines="none">
+        <ion-input
+          [label]="t('calculator.consumption')"
+          labelPlacement="stacked"
+          type="number"
+          inputmode="decimal"
+          step="0.1"
+          [ngModel]="editConsumption"
+          (ngModelChange)="onEditConsChange($event)">
+          <ion-icon slot="start" name="speedometer"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <ion-item class="edit-item" lines="none">
+        <ion-input
+          [label]="t('calculator.price')"
+          labelPlacement="stacked"
+          type="number"
+          inputmode="decimal"
+          step="0.01"
+          [ngModel]="editPrice"
+          (ngModelChange)="onEditPriceChange($event)">
+          <ion-icon slot="start" name="cash"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <ion-item class="edit-item passengers-item" lines="none">
+        <ion-input
+          [label]="t('calculator.passengers')"
+          labelPlacement="stacked"
+          type="number"
+          inputmode="numeric"
+          [ngModel]="editPassengers"
+          (ngModelChange)="onEditPassChange($event)">
+          <ion-icon slot="start" name="people"></ion-icon>
+        </ion-input>
+        <div class="passenger-buttons">
+          <ion-button fill="clear" size="small" (click)="changeEditPassengers(-1)" [disabled]="editPassengers <= 1">
+            <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="changeEditPassengers(1)">
+            <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </div>
+    <div class="edit-modal-footer">
+      <ion-button expand="block" (click)="saveEditModal()" class="save-edit-btn">
+        <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+        {{ t('history.editSave') }}
+      </ion-button>
+    </div>
+  </div>
+}

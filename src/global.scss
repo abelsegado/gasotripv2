@@ -35,3 +35,14 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/* Welcome Modal */
+.welcome-modal {
+  --border-radius: 0;
+  
+  .modal-wrapper {
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+  }
+}

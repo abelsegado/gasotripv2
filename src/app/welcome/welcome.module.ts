@@ -9,5 +9,6 @@ import { WelcomePage } from './welcome.page';
     CommonModule,
     IonicModule,
   ],
+  exports: [WelcomePage]
 })
 export class WelcomeModule {}

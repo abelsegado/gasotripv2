@@ -4,6 +4,7 @@ import { WelcomeService } from './services/welcome.service';
 import { ModalController } from '@ionic/angular';
 import { WelcomePage } from './welcome/welcome.page';
 import { Subscription } from 'rxjs';
+import { I18nService } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,13 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private networkService: NetworkService,
     private welcomeService: WelcomeService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private i18nService: I18nService
   ) {}
+
+  t(key: string): string {
+    return this.i18nService.t(key);
+  }
 
   ngOnInit(): void {
     this.isOnline = this.networkService.isOnline;

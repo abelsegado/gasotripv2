@@ -2,7 +2,7 @@
   @if (!isOnline) {
     <div class="network-banner">
       <ion-icon name="cloud-offline"></ion-icon>
-      <span>Sin conexión</span>
+      <span>{{ t('app.offline') }}</span>
     </div>
   }
   <ion-router-outlet></ion-router-outlet>

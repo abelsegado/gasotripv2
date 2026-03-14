@@ -3,7 +3,8 @@
     "name": "Gasotrip",
     "calculate": "Calculate",
     "history": "History",
-    "info": "Info"
+    "info": "Info",
+    "offline": "Offline"
   },
   "tabs": {
     "calculate": "Calculate",

@@ -24,7 +24,9 @@ jobs:
         run: npm run build
 
       - name: Add iOS platform
-        run: npx cap add ios
+        run: |
+          rm -rf ios
+          npx cap add ios
 
       - name: Install CocoaPods
         run: |

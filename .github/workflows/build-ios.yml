@@ -33,18 +33,17 @@ jobs:
           cd ios/App
           pod install
 
-      - name: Build iOS for Simulator
+      - name: Build iOS for Device
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination generic/platform=iOS CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
 
       - name: Create IPA
         run: |
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "App.app" -type d -path "*/Debug-iphonesimulator/*" | head -1)
           mkdir -p Payload
           cp -r "$APP_PATH" Payload/App.app
-          cd Payload
-          zip -r ../app.ipa ./
+          zip -r app.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4

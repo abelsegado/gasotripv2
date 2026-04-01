@@ -38,14 +38,16 @@ jobs:
           cd ios/App
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
 
-      - name: Find built app
+      - name: Create IPA
         run: |
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "App.app" -type d -path "*/Debug-iphonesimulator/*" | head -1)
-          echo "APP_PATH=$APP_PATH"
-          cp -r "$APP_PATH" ./App.app
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/App.app
+          cd Payload
+          zip -r ../app.ipa ./
 
-      - name: Upload App
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: gasotrip-app
-          path: App.app
+          name: gasotrip-ipa
+          path: app.ipa

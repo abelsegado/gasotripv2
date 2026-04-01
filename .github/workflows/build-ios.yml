@@ -28,13 +28,13 @@ jobs:
           rm -rf ios
           npx cap add ios
 
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
       - name: Install CocoaPods
         run: |
           cd ios/App
           pod install
-
-      - name: Sync Capacitor
-        run: npx cap sync ios
 
       - name: Build iOS for Device
         run: |
@@ -43,9 +43,11 @@ jobs:
 
       - name: Create IPA
         run: |
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "App.app" -type d -path "*/Debug-iphoneos/*" | head -1)
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "App.app" -type d | grep -i iphoneos | head -1)
+          echo "Found App at: $APP_PATH"
           mkdir -p Payload
           cp -r "$APP_PATH" Payload/App.app
+          ls -la Payload/App.app/
           zip -r app.ipa Payload
 
       - name: Upload IPA
